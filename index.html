@@ -94,7 +94,8 @@ nav.navlist{display:flex; flex-direction:column; gap:1px; margin-top:6px;}
 .month-switch{display:flex; align-items:center; gap:10px;}
 .month-switch button{width:30px; height:30px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); font-size:15px; display:flex; align-items:center; justify-content:center;}
 .month-switch button:hover{background:var(--surface-2);}
-.month-label{font-family:'Fraunces',serif; font-size:19px; font-weight:600; min-width:170px; text-align:center; text-transform:capitalize;}
+.month-label{font-family:'Fraunces',serif; font-size:19px; font-weight:600; min-width:170px; text-align:center; text-transform:capitalize; cursor:pointer; border-radius:6px; padding:2px 8px;}
+.month-label:hover{background:var(--surface-2);}
 #topbar-actions{display:flex; align-items:center; gap:10px;}
 .icon-btn{width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:center; color:var(--ink-soft);}
 .icon-btn:hover{background:var(--surface-2); color:var(--ink);}
@@ -287,9 +288,11 @@ table.datatable .rowactions{display:flex; gap:6px; justify-content:flex-end;}
       <div style="display:flex;align-items:center;gap:14px;">
         <button class="icon-btn" id="sidebar-toggle" style="display:none;">☰</button>
         <div class="month-switch">
-          <button id="prev-month">‹</button>
-          <div class="month-label" id="month-label"></div>
-          <button id="next-month">›</button>
+          <button id="prev-year" title="Ano anterior">«</button>
+          <button id="prev-month" title="Mês anterior">‹</button>
+          <div class="month-label" id="month-label" role="button" tabindex="0" title="Clique para escolher mês e ano"></div>
+          <button id="next-month" title="Próximo mês">›</button>
+          <button id="next-year" title="Próximo ano">»</button>
         </div>
       </div>
       <div id="topbar-actions"></div>
@@ -3819,6 +3822,29 @@ function quickAddMenu(){
 
 document.getElementById('prev-month').addEventListener('click', ()=>{ CURRENT_MONTH = addMonths(CURRENT_MONTH,-1); render(); });
 document.getElementById('next-month').addEventListener('click', ()=>{ CURRENT_MONTH = addMonths(CURRENT_MONTH,1); render(); });
+document.getElementById('prev-year').addEventListener('click', ()=>{ CURRENT_MONTH = addMonths(CURRENT_MONTH,-12); render(); });
+document.getElementById('next-year').addEventListener('click', ()=>{ CURRENT_MONTH = addMonths(CURRENT_MONTH,12); render(); });
+document.getElementById('month-label').addEventListener('click', openMonthPicker);
+document.getElementById('month-label').addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') openMonthPicker(); });
+function openMonthPicker(){
+  const [curY, curM] = CURRENT_MONTH.split('-').map(Number);
+  const nomesMes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const anos = []; for(let y=curY-3; y<=curY+3; y++) anos.push(y);
+  openModal({
+    title:'Ir para mês e ano',
+    submitLabel:'Ir',
+    bodyHtml:`
+      <div class="field-row">
+        <div class="field"><label>Mês</label><select name="mes">${nomesMes.map((n,i)=>`<option value="${i+1}" ${i+1===curM?'selected':''}>${n}</option>`).join('')}</select></div>
+        <div class="field"><label>Ano</label><select name="ano">${anos.map(y=>`<option value="${y}" ${y===curY?'selected':''}>${y}</option>`).join('')}</select></div>
+      </div>
+    `,
+    onSubmit:(fd)=>{
+      CURRENT_MONTH = monthKey(Number(fd.get('ano')), Number(fd.get('mes')));
+      closeModal(); render();
+    }
+  });
+}
 document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 document.getElementById('sidebar-toggle').addEventListener('click', ()=>document.getElementById('sidebar').classList.toggle('open'));
 
