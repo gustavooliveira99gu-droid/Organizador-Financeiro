@@ -4170,7 +4170,7 @@ function renderDashboard(c){
         <div class="hero-result ${resultado>=0?'pos':'neg'}">
           <span class="lbl">Resultado do mês</span>
           <span class="val">${fmtBRL(resultado)}</span>
-          <span class="sub">Receitas − despesas − faturas</span>
+          <span class="sub">Receitas − faturas</span>
         </div>
         <div class="hero-sub-grid">
           <div class="stat-card accent-l"><span class="lbl">Receitas</span><span class="val mono pos">${fmtBRL(receitas)}</span><span class="sub">Entradas do mês</span></div>
@@ -4352,7 +4352,7 @@ function buildAlerts(mk){
     }
   });
   const resultadoMesAlerta = resultadoDoMes(mk);
-  if(resultadoMesAlerta<0) alerts.push({type:'warn', text:`O resultado do mês está negativo: ${fmtBRL(resultadoMesAlerta)} (receitas menos despesas e faturas).`});
+  if(resultadoMesAlerta<0) alerts.push({type:'warn', text:`O resultado do mês está negativo: ${fmtBRL(resultadoMesAlerta)} (receitas menos faturas).`});
   if(saldoDisponivelContas()<0) alerts.push({type:'neg', text:`O saldo disponível nas contas está negativo: ${fmtBRL(saldoDisponivelContas())}.`});
   return alerts;
 }
